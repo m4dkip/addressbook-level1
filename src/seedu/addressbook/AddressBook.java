@@ -19,9 +19,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /*
  * NOTE : =============================================================
@@ -444,7 +446,7 @@ public class AddressBook {
 
     /**
      * Finds and lists all persons in address book whose name contains any of the argument keywords.
-     * Keyword matching is case sensitive.
+     * Keyword matching is case insensitive.
      *
      * @param commandArgs full command args string from the user
      * @return feedback display message for the operation result
@@ -486,12 +488,23 @@ public class AddressBook {
         final ArrayList<String[]> matchedPersons = new ArrayList<>();
         for (String[] person : getAllPersonsInAddressBook()) {
             final Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson(person)));
-            if (!Collections.disjoint(wordsInName, keywords)) {
+            if (!Collections.disjoint(lowercased(wordsInName), lowercased(keywords))) {
                 matchedPersons.add(person);
             }
         }
         return matchedPersons;
     }
+
+    /**
+     * Converts all strings in the input collection into lowercase and returns a new List.
+     *
+     * @param inputCollection to receive and copy all names into a new List to return.
+     * @return A new List of names in lowercase.
+     */
+    private static List<String> lowercased(Collection<String> inputCollection) {
+        return inputCollection.stream().map(String::toLowerCase).collect(Collectors.toList());
+    }
+
 
     /**
      * Deletes person identified using last displayed index.
